@@ -1,0 +1,26 @@
+.tabs{
+    display: flex;
+    gap: 0.25rem;
+    &__item{
+        height: 1.75rem;
+        font-size: 0.8125rem;
+        padding: 0 0.75rem;
+        border-radius: 0.75rem;
+        color: #0f0f0f;
+        background-color: rgb(248, 249, 250) ;
+        display: flex;
+        cursor: pointer;
+        text-align: center;
+        align-items: center;
+        gap:0.5rem;
+        &--active{
+            background-color: #2196F3;
+            color: #fff;
+        }
+    }
+}
+
+
+.tabpanel{
+    margin-block-start: 1rem;
+}
