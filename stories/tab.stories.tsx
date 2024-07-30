@@ -1,6 +1,7 @@
 import { Tab } from "../components/Tab";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
+import { FaInfo } from "react-icons/fa";
 
 import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
 
@@ -21,6 +22,7 @@ export const Default: Story = {
         label: "Tab 1",
         value: "1",
         content: <div>Tab content 1</div>,
+        startIcon: <FaInfo />,
       },
       {
         label: "Tab 2",
@@ -31,6 +33,7 @@ export const Default: Story = {
         label: "Tab 3",
         value: "3",
         content: <div>Tab content 3</div>,
+        endIcon: <FaInfo />,
       },
     ],
   },
