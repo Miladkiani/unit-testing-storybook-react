@@ -21,19 +21,65 @@ export const Default: Story = {
       {
         label: "Tab 1",
         value: "1",
-        content: <div>Tab content 1</div>,
-        startIcon: <FaInfo />,
+        content: <div>Tab 1 content</div>,
       },
       {
         label: "Tab 2",
         value: "2",
-        content: <div>Tab content 2</div>,
+        content: <div>Tab 2 content</div>,
       },
       {
         label: "Tab 3",
         value: "3",
-        content: <div>Tab content 3</div>,
-        endIcon: <FaInfo />,
+        content: <div>Tab 3 content</div>,
+      },
+    ],
+  },
+};
+
+export const WithDefaultValue: Story = {
+  args: {
+    defaultValue: "3",
+    items: [
+      {
+        label: "Tab 1",
+        value: "1",
+        content: <div>Tab 1 content</div>,
+      },
+      {
+        label: "Tab 2",
+        value: "2",
+        content: <div>Tab 2 content</div>,
+      },
+      {
+        label: "Tab 3",
+        value: "3",
+        content: <div>Tab 3 content</div>,
+      },
+    ],
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    defaultValue: "1",
+    items: [
+      {
+        label: "Tab 1",
+        value: "1",
+        content: <div>Tab 1 content</div>,
+        startIcon: <FaInfo role="img" />,
+      },
+      {
+        label: "Tab 2",
+        value: "2",
+        content: <div>Tab 2 content</div>,
+      },
+      {
+        label: "Tab 3",
+        value: "3",
+        content: <div>Tab 3 content</div>,
+        endIcon: <FaInfo role="img" />,
       },
     ],
   },
