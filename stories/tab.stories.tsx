@@ -39,7 +39,7 @@ export const Default: Story = {
 
 export const WithDefaultValue: Story = {
   args: {
-    defaultValue: "3",
+    defaultSelectedTabValue: "5",
     items: [
       {
         label: "Tab 1",
@@ -62,7 +62,7 @@ export const WithDefaultValue: Story = {
 
 export const WithIcon: Story = {
   args: {
-    defaultValue: "1",
+    defaultSelectedTabValue: "1",
     items: [
       {
         label: "Tab 1",

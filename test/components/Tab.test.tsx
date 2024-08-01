@@ -77,7 +77,8 @@ describe("Tab Component", () => {
   it("Should render the content linked to the passed default value", async () => {
     render(<WithDefaultValue />);
 
-    const { items, defaultValue } = WithDefaultValue.args;
+    const { items, defaultSelectedTabValue: defaultValue } =
+      WithDefaultValue.args;
 
     const tabPanel = screen.getByRole("tabpanel");
 

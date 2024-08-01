@@ -1,5 +1,5 @@
-import { ReactNode, useState } from "react";
 import clsx from "clsx";
+import { ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import "./tab.scss";
 
 interface ITabItem {
@@ -12,27 +12,43 @@ interface ITabItem {
 
 interface TabProps<T extends ITabItem> {
   items: T[];
-  defaultValue?: T["value"];
+  defaultSelectedTabValue?: T["value"];
   children?: ReactNode | ((activeTab: T["value"]) => ReactNode);
 }
 
 export const Tab = <T extends ITabItem>({
   items,
-  defaultValue,
+  defaultSelectedTabValue,
   children,
 }: TabProps<T>) => {
-  const [activeTab, setActiveTab] = useState<T["value"]>(
-    defaultValue || items[0].value
+  const { current: defaultSelectedTab } = useRef(defaultSelectedTabValue);
+
+  const obtainDefaultSelectedTabValu = () => {
+    if (defaultSelectedTab == undefined) return items[0].value;
+
+    const isDefaultValueValid = items.some(
+      (tab) => tab.value === defaultSelectedTab
+    );
+
+    if (isDefaultValueValid) return defaultSelectedTab;
+    else return items[0].value;
+  };
+
+  const [selectedTab, setSelectedTab] = useState<T["value"]>(
+    obtainDefaultSelectedTabValu()
   );
 
-  const isActiveTab = (tabValue: T["value"]) => activeTab === tabValue;
+  const isTabSelected = useCallback(
+    (tabValue: T["value"]) => selectedTab === tabValue,
+    [selectedTab]
+  );
 
-  const renderContent = () => {
-    if (typeof children === "function") return children(activeTab);
-    const activeItem = items.find((tab) => isActiveTab(tab.value));
+  const renderContent = useMemo(() => {
+    if (typeof children === "function") return children(selectedTab);
+    const selectedItem = items.find((tab) => isTabSelected(tab.value));
 
-    return activeItem?.content || children;
-  };
+    return selectedItem?.content || children;
+  }, [items, children, isTabSelected]);
 
   return (
     <div className="tab-container">
@@ -43,10 +59,10 @@ export const Tab = <T extends ITabItem>({
               key={String(tab.value)}
               role="tab"
               aria-controls={`panel-${tab.value.toString()}`}
-              aria-selected={isActiveTab(tab.value)}
-              onClick={() => setActiveTab(tab.value)}
+              aria-selected={isTabSelected(tab.value)}
+              onClick={() => setSelectedTab(tab.value)}
               className={clsx("tabs__item", {
-                "tabs__item--active": isActiveTab(tab.value),
+                "tabs__item--active": isTabSelected(tab.value),
               })}
             >
               {tab.startIcon}
@@ -57,7 +73,7 @@ export const Tab = <T extends ITabItem>({
         })}
       </div>
       <div className="tabpanel" role="tabpanel">
-        {renderContent()}
+        {renderContent}
       </div>
     </div>
   );
