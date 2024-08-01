@@ -4,7 +4,8 @@ import { render, screen, fireEvent, within } from "@testing-library/react";
 
 import * as stories from "../../stories/tab.stories";
 
-const { Default, WithDefaultValue, WithIcon } = composeStories(stories);
+const { Default, WithDefaultValue, WithIcon, WithChildren } =
+  composeStories(stories);
 
 const renderDefaultStory = () => {
   render(<Default />);
@@ -84,23 +85,57 @@ describe("Tab Component", () => {
 
     const selectedTab = items?.find((item) => item.value === defaultValue);
 
-    const selectedTabTitle = selectedTab?.label.toString() || "";
+    const selectedTabLabel = selectedTab?.label.toString() || "";
 
     const selectedTabElement = screen.getByRole("tab", {
       selected: true,
-      name: new RegExp(selectedTabTitle, "i"),
+      name: new RegExp(selectedTabLabel, "i"),
     });
 
     expect(selectedTabElement).toBeInTheDocument();
 
-    const regExTabContent = new RegExp(`${selectedTabTitle} content`, "i");
+    const regExTabContent = new RegExp(`${selectedTabLabel} content`, "i");
 
     const tabContentElement = screen.getByText(regExTabContent);
 
     expect(tabPanel).toContainElement(tabContentElement);
   });
 
-  it("should render an icon in if any of tabs include startIcon", () => {
+  it("Should render the children if not passed any content to selected tab", async () => {
+    render(<WithChildren />);
+
+    const { items } = WithChildren.args;
+
+    const tabs = items || [];
+
+    const tabPanel = screen.getByRole("tabpanel");
+
+    const defaultSelectedTab = tabs[0];
+
+    const selectedTabLabel = defaultSelectedTab.label.toString() || "";
+
+    const regExTabContent = new RegExp(`${selectedTabLabel} children`, "i");
+
+    let tabContentElement = screen.getByText(regExTabContent);
+
+    expect(tabPanel).toContainElement(tabContentElement);
+
+    const tabTwo = tabs[1];
+
+    const tabTwoElement = screen.getByRole("tab", {
+      name: new RegExp(tabTwo.label, "i"),
+    });
+
+    fireEvent.click(tabTwoElement);
+
+    const regExTab2 = `${tabTwo.label.toString()} children`;
+
+    tabContentElement = screen.getByText(new RegExp(regExTab2, "i"));
+
+    expect(tabPanel).toContainElement(tabContentElement);
+  });
+
+  it("should render an icon if any of tabs include startIcon", () => {
     render(<WithIcon />);
 
     const tabs = WithIcon.args.items;
@@ -118,7 +153,7 @@ describe("Tab Component", () => {
     });
   });
 
-  it("should render an icon in if any of tabs include endIcon", () => {
+  it("should render an icon if any of tabs include endIcon", () => {
     render(<WithIcon />);
 
     const tabs = WithIcon.args.items;
@@ -134,5 +169,55 @@ describe("Tab Component", () => {
 
       expect(tabElement.lastChild).toBe(icon);
     });
+  });
+
+  // Negative tests
+
+  it("should render the first element of the items if given wrong default selected tab", () => {
+    render(<WithDefaultValue defaultSelectedTabValue={"wrongKey"} />);
+
+    const activeTab = screen.getByRole("tab", {
+      selected: true,
+    });
+
+    const tabs = WithDefaultValue.args.items || [];
+
+    expect(activeTab).toHaveTextContent(tabs[0].label.toString());
+
+    const tabPanel = screen.getByRole("tabpanel");
+
+    const activeRelatedContent = screen.getByText(/tab 1 content/i);
+
+    expect(tabPanel).toContainElement(activeRelatedContent);
+  });
+
+  it("should render nothing in tabpanel if not passed any content to selected tab and children into the component ", () => {
+    const items = [
+      {
+        label: "Tab 1",
+        value: "1",
+      },
+      {
+        label: "Tab 2",
+        value: "2",
+        content: <div>Tab 2 content</div>,
+      },
+      {
+        label: "Tab 3",
+        value: "3",
+        content: <div>Tab 3 content</div>,
+      },
+    ];
+    render(<Default items={items} />);
+
+    const activeTab = screen.getByRole("tab", {
+      selected: true,
+    });
+
+    expect(activeTab).toHaveTextContent(items[0].label.toString());
+
+    const tabPanel = screen.getByRole("tabpanel");
+
+    expect(tabPanel.children).toHaveLength(0);
   });
 });

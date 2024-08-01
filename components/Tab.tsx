@@ -23,7 +23,7 @@ export const Tab = <T extends ITabItem>({
 }: TabProps<T>) => {
   const { current: defaultSelectedTab } = useRef(defaultSelectedTabValue);
 
-  const obtainDefaultSelectedTabValu = () => {
+  const obtainDefaultSelectedTabValue = () => {
     if (defaultSelectedTab == undefined) return items[0].value;
 
     const isDefaultValueValid = items.some(
@@ -35,7 +35,7 @@ export const Tab = <T extends ITabItem>({
   };
 
   const [selectedTab, setSelectedTab] = useState<T["value"]>(
-    obtainDefaultSelectedTabValu()
+    obtainDefaultSelectedTabValue()
   );
 
   const isTabSelected = useCallback(

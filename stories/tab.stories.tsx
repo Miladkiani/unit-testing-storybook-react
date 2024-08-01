@@ -84,3 +84,34 @@ export const WithIcon: Story = {
     ],
   },
 };
+
+export const WithChildren: Story = {
+  args: {
+    defaultSelectedTabValue: "1",
+    items: [
+      {
+        label: "Tab 1",
+        value: "1",
+        startIcon: <FaInfo role="img" />,
+      },
+      {
+        label: "Tab 2",
+        value: "2",
+      },
+      {
+        label: "Tab 3",
+        value: "3",
+        endIcon: <FaInfo role="img" />,
+      },
+    ],
+  },
+  render: ({ items }) => {
+    const tabContents: { [k in string]: React.ReactNode } = {
+      "1": <div>Tab 1 children</div>,
+      "2": <div>Tab 2 children</div>,
+      "3": <div>Tab 3 children</div>,
+    };
+
+    return <Tab items={items}>{(activeTab) => tabContents[activeTab]}</Tab>;
+  },
+};
