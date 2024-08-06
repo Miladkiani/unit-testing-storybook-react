@@ -10,28 +10,28 @@ interface ITabItem {
   content?: ReactNode;
 }
 
-interface TabProps<T extends ITabItem> {
-  items: T[];
+export interface TabProps<T extends ITabItem = ITabItem> {
+  tabs: T[];
   defaultSelectedTabValue?: T["value"];
   children?: ReactNode | ((activeTab: T["value"]) => ReactNode);
 }
 
 export const Tab = <T extends ITabItem>({
-  items,
+  tabs,
   defaultSelectedTabValue,
   children,
 }: TabProps<T>) => {
   const { current: defaultSelectedTab } = useRef(defaultSelectedTabValue);
 
   const obtainDefaultSelectedTabValue = () => {
-    if (defaultSelectedTab == undefined) return items[0].value;
+    if (defaultSelectedTab == undefined) return tabs[0].value;
 
-    const isDefaultValueValid = items.some(
+    const isDefaultValueValid = tabs.some(
       (tab) => tab.value === defaultSelectedTab
     );
 
     if (isDefaultValueValid) return defaultSelectedTab;
-    else return items[0].value;
+    else return tabs[0].value;
   };
 
   const [selectedTab, setSelectedTab] = useState<T["value"]>(
@@ -45,15 +45,15 @@ export const Tab = <T extends ITabItem>({
 
   const renderContent = useMemo(() => {
     if (typeof children === "function") return children(selectedTab);
-    const selectedItem = items.find((tab) => isTabSelected(tab.value));
+    const selectedItem = tabs.find((tab) => isTabSelected(tab.value));
 
     return selectedItem?.content || children;
-  }, [items, children, isTabSelected]);
+  }, [tabs, children, isTabSelected]);
 
   return (
     <div className="tab-container">
       <div className="tabs" role="tablist">
-        {items.map((tab) => {
+        {tabs.map((tab) => {
           return (
             <div
               key={String(tab.value)}

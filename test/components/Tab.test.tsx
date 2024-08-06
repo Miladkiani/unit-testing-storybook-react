@@ -3,6 +3,7 @@ import { composeStories } from "@storybook/react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 
 import * as stories from "../../stories/tab.stories";
+import { TabProps } from "#/components/Tab";
 
 const { Default, WithDefaultValue, WithIcon, WithChildren } =
   composeStories(stories);
@@ -14,14 +15,35 @@ const TAB_STORIES = {
   WithChildren: WithDefaultValue,
 } as const;
 
-const renderTab = (story: keyof typeof TAB_STORIES) => {
+const renderTab = (
+  story: keyof typeof TAB_STORIES,
+  tabProps?: Partial<TabProps>
+) => {
   const Component = TAB_STORIES[story];
 
-  render(<Component />);
+  render(<Component {...tabProps} />);
 
-  const tabs = Component.args.items || [];
+  const tabs = Component.args.tabs || [];
 
   const tabPanel = screen.getByRole("tabpanel");
+
+  const getTabCotnentElementByLabel = (label: string) =>
+    screen.getByText(new RegExp(label, "i"));
+
+  const getTabElementByLabel = (label: string) =>
+    screen.getByRole("tab", {
+      name: new RegExp(label, "i"),
+    });
+
+  const findSelectedTabObjByValue = (
+    defaultSelectedTabValue: TabProps["defaultSelectedTabValue"]
+  ) => tabs?.find((item) => item.value === defaultSelectedTabValue);
+
+  const getSelectedTabElementByLabel = (label: string) =>
+    screen.getByRole("tab", {
+      selected: true,
+      name: new RegExp(label, "i"),
+    });
 
   const expectSelectedTabToBe = (tabLabel: string) => {
     const activeTab = screen.getByRole("tab", {
@@ -39,7 +61,11 @@ const renderTab = (story: keyof typeof TAB_STORIES) => {
 
   return {
     tabs,
-    expectٍTabPanelToContainElement,
+    getSelectedTabElementByLabel,
+    getTabElementByLabel,
+    getTabCotnentElementByLabel,
+    findSelectedTabObjByValue,
+    expectTabPanelToContainElement: expectٍTabPanelToContainElement,
     expectSelectedTabToBe,
     args: Component.args,
   };
@@ -55,8 +81,11 @@ describe("Tab Component", () => {
   });
 
   it("Should render the content associated with the value of the first item in the tabs array and style the selected tab button if no default tab value is provided.", async () => {
-    const { tabs, expectٍTabPanelToContainElement, expectSelectedTabToBe } =
-      renderTab("Default");
+    const {
+      tabs,
+      expectTabPanelToContainElement: expectٍTabPanelToContainElement,
+      expectSelectedTabToBe,
+    } = renderTab("Default");
 
     expectSelectedTabToBe(tabs[0].label.toString());
 
@@ -66,139 +95,139 @@ describe("Tab Component", () => {
   });
 
   it("Should render the content linked to a tab when clicked", async () => {
-    const { tabs, expectٍTabPanelToContainElement } = renderTab("Default");
+    const {
+      tabs,
+      expectTabPanelToContainElement: expectTabPanelToContaineElement,
+      getTabElementByLabel: getTabByLabel,
+      getTabCotnentElementByLabel,
+    } = renderTab("Default");
 
     const tabOne = tabs[1];
 
-    const tabOneElement = screen.getByRole("tab", {
-      name: new RegExp(tabOne.label.toString(), "i"),
-    });
+    const tabOneElement = getTabByLabel(tabOne.label.toString());
 
     fireEvent.click(tabOneElement);
 
-    const regExTab1 = `${tabOne.label.toString()} content`;
+    let tabContentElement = getTabCotnentElementByLabel(
+      `${tabOne.label.toString()} content`
+    );
 
-    let tabContentElement = screen.getByText(new RegExp(regExTab1, "i"));
-
-    expectٍTabPanelToContainElement(tabContentElement);
+    expectTabPanelToContaineElement(tabContentElement);
 
     const tabTwo = tabs[2];
 
-    const tabTwoElement = screen.getByRole("tab", {
-      name: new RegExp(tabTwo.label.toString(), "i"),
-    });
+    const tabTwoElement = getTabByLabel(tabTwo.label.toString());
 
     fireEvent.click(tabTwoElement);
 
-    const regExTab2 = `${tabTwo.label.toString()} content`;
+    tabContentElement = getTabCotnentElementByLabel(
+      `${tabTwo.label.toString()} content`
+    );
 
-    tabContentElement = screen.getByText(new RegExp(regExTab2, "i"));
-
-    expectٍTabPanelToContainElement(tabContentElement);
+    expectTabPanelToContaineElement(tabContentElement);
   });
 
   it("Should render the content linked to the passed default value", async () => {
     const {
-      expectٍTabPanelToContainElement,
+      findSelectedTabObjByValue,
+      getSelectedTabElementByLabel,
+      expectTabPanelToContainElement: expectٍTabPanelToContainElement,
+      getTabCotnentElementByLabel,
       args: { defaultSelectedTabValue },
-      tabs,
     } = renderTab("WithDefaultValue");
 
-    const selectedTab = tabs?.find(
-      (item) => item.value === defaultSelectedTabValue
-    );
+    const selectedTab = findSelectedTabObjByValue(defaultSelectedTabValue);
 
     const selectedTabLabel = selectedTab?.label.toString() || "";
 
-    const selectedTabElement = screen.getByRole("tab", {
-      selected: true,
-      name: new RegExp(selectedTabLabel, "i"),
-    });
+    const selectedTabElement = getSelectedTabElementByLabel(selectedTabLabel);
 
     expect(selectedTabElement).toBeInTheDocument();
 
-    const regExTabContent = new RegExp(`${selectedTabLabel} content`, "i");
-
-    const tabContentElement = screen.getByText(regExTabContent);
+    const tabContentElement = getTabCotnentElementByLabel(
+      `${selectedTabLabel} content`
+    );
 
     expectٍTabPanelToContainElement(tabContentElement);
   });
 
   it("Should render the children if not passed any content to selected tab", async () => {
-    const { expectٍTabPanelToContainElement, tabs } = renderTab("WithChildren");
+    const {
+      expectTabPanelToContainElement,
+      tabs,
+      getTabCotnentElementByLabel,
+      getTabElementByLabel,
+    } = renderTab("WithChildren");
 
     const defaultSelectedTab = tabs[0];
 
-    const selectedTabLabel = defaultSelectedTab.label.toString() || "";
+    const selectedTabLabel = defaultSelectedTab.label;
 
-    const regExTabContent = new RegExp(`${selectedTabLabel} children`, "i");
+    let tabContentElement = getTabCotnentElementByLabel(
+      `${selectedTabLabel} content`
+    );
 
-    let tabContentElement = screen.getByText(regExTabContent);
-
-    expectٍTabPanelToContainElement(tabContentElement);
+    expectTabPanelToContainElement(tabContentElement);
 
     const tabTwo = tabs[1];
 
-    const tabTwoElement = screen.getByRole("tab", {
-      name: new RegExp(tabTwo.label, "i"),
-    });
+    const tabTwoElement = getTabElementByLabel(tabTwo.label);
 
     fireEvent.click(tabTwoElement);
 
-    const regExTab2 = `${tabTwo.label.toString()} children`;
+    tabContentElement = getTabCotnentElementByLabel(
+      `${tabTwo.label.toString()} children`
+    );
 
-    tabContentElement = screen.getByText(new RegExp(regExTab2, "i"));
-
-    expectٍTabPanelToContainElement(tabContentElement);
+    expectTabPanelToContainElement(tabContentElement);
   });
 
-  it("should render an icon if any of tabs include startIcon", () => {
-    const { tabs } = renderTab("WithIcon");
+  it.each<{ iconPosition: "startIcon" | "endIcon" }>([
+    {
+      iconPosition: "startIcon",
+    },
+    {
+      iconPosition: "endIcon",
+    },
+  ])(
+    `should render an icon if any of tabs include $iconPosition`,
+    ({ iconPosition }) => {
+      const { tabs, getTabElementByLabel } = renderTab("WithIcon");
 
-    const tabsWithAfterIcon = tabs?.filter((tab) => !!tab.startIcon);
+      const tabsWithIcon = tabs?.filter((tab) => !!tab[iconPosition]);
 
-    tabsWithAfterIcon?.forEach((tab) => {
-      const tabElement = screen.getByRole("tab", {
-        name: new RegExp(tab.label.toString(), "i"),
+      tabsWithIcon?.forEach((tab) => {
+        const tabElement = getTabElementByLabel(tab.label.toString());
+
+        const icon = within(tabElement).getByRole("img");
+
+        if (iconPosition === "startIcon")
+          expect(tabElement.firstChild).toBe(icon);
+        else if (iconPosition === "endIcon")
+          expect(tabElement.lastChild).toBe(icon);
       });
-
-      const icon = within(tabElement).getByRole("img");
-
-      expect(tabElement.firstChild).toBe(icon);
-    });
-  });
-
-  it("should render an icon if any of tabs include endIcon", () => {
-    const { tabs } = renderTab("WithIcon");
-
-    const tabsWithAfterIcon = tabs?.filter((tab) => !!tab.endIcon);
-
-    tabsWithAfterIcon?.forEach((tab) => {
-      const tabElement = screen.getByRole("tab", {
-        name: new RegExp(tab.label.toString(), "i"),
-      });
-
-      const icon = within(tabElement).getByRole("img");
-
-      expect(tabElement.lastChild).toBe(icon);
-    });
-  });
+    }
+  );
 
   // Negative tests
 
   it("should render the first element of the items if given wrong default selected tab", () => {
-    const { expectٍTabPanelToContainElement, expectSelectedTabToBe, tabs } =
-      renderTab("WithDefaultValue", { defaultSelectedTabValue: "wrongKey" });
+    const {
+      getTabCotnentElementByLabel,
+      expectTabPanelToContainElement,
+      expectSelectedTabToBe,
+      tabs,
+    } = renderTab("WithDefaultValue", { defaultSelectedTabValue: "wrongKey" });
 
     expectSelectedTabToBe(tabs[0].label.toString());
 
-    const activeRelatedContent = screen.getByText(/tab 1 content/i);
+    const activeRelatedContent = getTabCotnentElementByLabel("tab 1 content");
 
-    expectٍTabPanelToContainElement(activeRelatedContent);
+    expectTabPanelToContainElement(activeRelatedContent);
   });
 
   it("should render nothing in tabpanel if not passed any content to selected tab and children into the component ", () => {
-    const items = [
+    const newTabs = [
       {
         label: "Tab 1",
         value: "1",
@@ -215,9 +244,9 @@ describe("Tab Component", () => {
       },
     ];
 
-    const { expectSelectedTabToBe } = renderTab("Default", { items: items });
+    const { expectSelectedTabToBe } = renderTab("Default", { tabs: newTabs });
 
-    expectSelectedTabToBe(items[0].label.toString());
+    expectSelectedTabToBe(newTabs[0].label.toString());
 
     const tabPanel = screen.getByRole("tabpanel");
 

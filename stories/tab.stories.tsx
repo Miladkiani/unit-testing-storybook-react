@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    items: [
+    tabs: [
       {
         label: "Tab 1",
         value: "1",
@@ -40,7 +40,7 @@ export const Default: Story = {
 export const WithDefaultValue: Story = {
   args: {
     defaultSelectedTabValue: "5",
-    items: [
+    tabs: [
       {
         label: "Tab 1",
         value: "1",
@@ -63,7 +63,7 @@ export const WithDefaultValue: Story = {
 export const WithIcon: Story = {
   args: {
     defaultSelectedTabValue: "1",
-    items: [
+    tabs: [
       {
         label: "Tab 1",
         value: "1",
@@ -88,7 +88,7 @@ export const WithIcon: Story = {
 export const WithChildren: Story = {
   args: {
     defaultSelectedTabValue: "1",
-    items: [
+    tabs: [
       {
         label: "Tab 1",
         value: "1",
@@ -105,13 +105,13 @@ export const WithChildren: Story = {
       },
     ],
   },
-  render: ({ items }) => {
+  render: ({ tabs: items }) => {
     const tabContents: { [k in string]: React.ReactNode } = {
       "1": <div>Tab 1 children</div>,
       "2": <div>Tab 2 children</div>,
       "3": <div>Tab 3 children</div>,
     };
 
-    return <Tab items={items}>{(activeTab) => tabContents[activeTab]}</Tab>;
+    return <Tab tabs={items}>{(activeTab) => tabContents[activeTab]}</Tab>;
   },
 };
