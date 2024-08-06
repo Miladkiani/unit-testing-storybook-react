@@ -12,7 +12,7 @@ const TAB_STORIES = {
   Default: Default,
   WithDefaultValue: WithDefaultValue,
   WithIcon: WithIcon,
-  WithChildren: WithDefaultValue,
+  WithChildren: WithChildren,
 } as const;
 
 const renderTab = (
@@ -23,7 +23,7 @@ const renderTab = (
 
   render(<Component {...tabProps} />);
 
-  const tabs = Component.args.tabs || [];
+  const tabs = tabProps?.tabs || Component.args.tabs || [];
 
   const tabPanel = screen.getByRole("tabpanel");
 
@@ -53,7 +53,7 @@ const renderTab = (
     expect(activeTab).toHaveTextContent(tabLabel);
   };
 
-  const expectٍTabPanelToContainElement = (
+  const expectTabPanelToContainElement = (
     activeRelatedContent: HTMLElement
   ) => {
     expect(tabPanel).toContainElement(activeRelatedContent);
@@ -65,7 +65,7 @@ const renderTab = (
     getTabElementByLabel,
     getTabCotnentElementByLabel,
     findSelectedTabObjByValue,
-    expectTabPanelToContainElement: expectٍTabPanelToContainElement,
+    expectTabPanelToContainElement,
     expectSelectedTabToBe,
     args: Component.args,
   };
@@ -97,7 +97,7 @@ describe("Tab Component", () => {
   it("Should render the content linked to a tab when clicked", async () => {
     const {
       tabs,
-      expectTabPanelToContainElement: expectTabPanelToContaineElement,
+      expectTabPanelToContainElement,
       getTabElementByLabel: getTabByLabel,
       getTabCotnentElementByLabel,
     } = renderTab("Default");
@@ -112,7 +112,7 @@ describe("Tab Component", () => {
       `${tabOne.label.toString()} content`
     );
 
-    expectTabPanelToContaineElement(tabContentElement);
+    expectTabPanelToContainElement(tabContentElement);
 
     const tabTwo = tabs[2];
 
@@ -124,14 +124,14 @@ describe("Tab Component", () => {
       `${tabTwo.label.toString()} content`
     );
 
-    expectTabPanelToContaineElement(tabContentElement);
+    expectTabPanelToContainElement(tabContentElement);
   });
 
   it("Should render the content linked to the passed default value", async () => {
     const {
       findSelectedTabObjByValue,
       getSelectedTabElementByLabel,
-      expectTabPanelToContainElement: expectٍTabPanelToContainElement,
+      expectTabPanelToContainElement,
       getTabCotnentElementByLabel,
       args: { defaultSelectedTabValue },
     } = renderTab("WithDefaultValue");
@@ -148,7 +148,7 @@ describe("Tab Component", () => {
       `${selectedTabLabel} content`
     );
 
-    expectٍTabPanelToContainElement(tabContentElement);
+    expectTabPanelToContainElement(tabContentElement);
   });
 
   it("Should render the children if not passed any content to selected tab", async () => {
@@ -164,7 +164,7 @@ describe("Tab Component", () => {
     const selectedTabLabel = defaultSelectedTab.label;
 
     let tabContentElement = getTabCotnentElementByLabel(
-      `${selectedTabLabel} content`
+      `${selectedTabLabel} children`
     );
 
     expectTabPanelToContainElement(tabContentElement);
