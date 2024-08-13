@@ -81,30 +81,27 @@ describe("Tab Component", () => {
   });
 
   it("Should render the content associated with the value of the first item in the tabs array and style the selected tab button if no default tab value is provided.", async () => {
-    const {
-      tabs,
-      expectTabPanelToContainElement: expectٍTabPanelToContainElement,
-      expectSelectedTabToBe,
-    } = renderTab("Default");
+    const { tabs, expectTabPanelToContainElement, expectSelectedTabToBe } =
+      renderTab("Default");
 
     expectSelectedTabToBe(tabs[0].label.toString());
 
     const activeRelatedContent = screen.getByText(/tab 1 content/i);
 
-    expectٍTabPanelToContainElement(activeRelatedContent);
+    expectTabPanelToContainElement(activeRelatedContent);
   });
 
   it("Should render the content linked to a tab when clicked", async () => {
     const {
       tabs,
       expectTabPanelToContainElement,
-      getTabElementByLabel: getTabByLabel,
+      getTabElementByLabel,
       getTabCotnentElementByLabel,
     } = renderTab("Default");
 
     const tabOne = tabs[1];
 
-    const tabOneElement = getTabByLabel(tabOne.label.toString());
+    const tabOneElement = getTabElementByLabel(tabOne.label.toString());
 
     fireEvent.click(tabOneElement);
 
@@ -116,7 +113,7 @@ describe("Tab Component", () => {
 
     const tabTwo = tabs[2];
 
-    const tabTwoElement = getTabByLabel(tabTwo.label.toString());
+    const tabTwoElement = getTabElementByLabel(tabTwo.label.toString());
 
     fireEvent.click(tabTwoElement);
 
