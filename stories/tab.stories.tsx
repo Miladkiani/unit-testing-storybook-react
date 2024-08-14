@@ -3,8 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { FaInfo } from "react-icons/fa";
 
-import { expect, fn, userEvent, waitFor, within } from "@storybook/test";
-
 const meta: Meta<typeof Tab> = {
   title: "components/Tab",
   component: Tab,
