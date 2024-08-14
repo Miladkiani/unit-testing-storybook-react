@@ -5,18 +5,17 @@
     height: 1.75rem;
     font-size: 0.8125rem;
     padding: 0 0.75rem;
-    border-radius: 0.75rem;
+
     color: #0f0f0f;
-    background-color: rgb(235, 235, 250);
+
     display: flex;
     cursor: pointer;
     text-align: center;
     align-items: center;
     gap: 0.25rem;
     &--active {
-      background-color: #2196f3;
-      color: #fff;
-    }
+      border-block-end:1px solid #2196f3;
+    };
   }
 }
 
