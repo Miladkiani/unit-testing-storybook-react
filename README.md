@@ -14,7 +14,7 @@ Run the following command to install the dependencies:
 
 To run the tests, use one of the following commands:
 
-`npm runt test`
+`npm run test`
 
 or
 
